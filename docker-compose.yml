@@ -1,24 +1,31 @@
 version: "2.0"
 
 services:
-  app:
+
+  producer:
     build: ./app/source
     ports:
       - "3000:3000"
     links:
       - kafka
-  kafka:
-    image: "wurstmeister/kafka:0.10.2.0"
-    ports:
-      - "9092:9092"
-    hostname: kafka
+
+  subscriber:
+    build: ./app/listener1
     links:
-      - zookeeper
-    environment:
-      - KAFKA_ADVERTISED_HOST_NAME=kafka
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_ADVERTISED_PORT=9092
+      - kafka
+      - producer
+
   zookeeper:
     image: wurstmeister/zookeeper
     ports:
       - "2181:2181"
+
+  kafka:
+    image: wurstmeister/kafka
+    ports:
+      - "9092:9092"
+    hostname: kafka
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_CREATE_TOPICS: "greatings1:1:1"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181

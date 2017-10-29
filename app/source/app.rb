@@ -25,3 +25,5 @@ loop do
 
   sleep 10
 end
+
+at_exit { $kafka.shutdown }
